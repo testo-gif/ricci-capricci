@@ -1,502 +1,258 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Ricci & Capricci — Salone di Bellezza Bologna</title>
-<meta name="description" content="Ricci & Capricci, salone di bellezza a Bologna Borgo Panigale. Taglio, colore, colpi di luce, trattamenti. Via Raffaele Bombelli 19. Tel +39 339 532 7550."/>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ricci & Capricci — Bologna</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{--oro:#b8860b;--oro-d:#8b6508;--oro-l:#fdf8ee;--oro-m:#e8d5a0;--w:#fff;--off:#faf9f6;--text:#1a1714;--t2:#6b6458;--t3:#a89e90;--border:#e8e2d8;--wa:#25D366}
-html{scroll-behavior:smooth}
-body{font-family:'Inter',sans-serif;color:var(--text);background:var(--w);overflow-x:hidden}
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--purple:#c084fc;--dark:#1a1a1a;--light:#faf9f7}
+body{font-family:'Inter',sans-serif;background:var(--light);color:var(--dark)}
+h1,h2,h3,h4{font-family:'Cormorant Garamond',serif}
 
-nav{position:fixed;top:0;left:0;right:0;z-index:200;height:60px;padding:0 2rem;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
-.nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:600;font-style:italic;color:var(--text)}
-.nav-logo em{color:var(--oro);font-style:normal}
-.nav-links{display:flex;gap:1.75rem;align-items:center}
-.nav-links a{font-size:12px;color:var(--t2);text-decoration:none;transition:color .15s}
-.nav-links a:hover{color:var(--oro)}
-.nav-cta{background:var(--wa)!important;color:#fff!important;padding:7px 16px;border-radius:50px;font-weight:500!important}
-@media(max-width:768px){.nav-links a:not(.nav-cta){display:none}}
+/* BANNER ACQUISTO */
+#buy-banner{position:fixed;top:0;left:0;width:100%;background:#000;color:#fff;z-index:9999;padding:10px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+#buy-banner p{font-size:14px;line-height:1.3}
+#buy-banner a{background:#ff4d00;color:#fff;text-decoration:none;padding:8px 18px;border-radius:4px;font-size:13px;font-weight:500;white-space:nowrap;flex-shrink:0}
+@media(max-width:600px){#buy-banner p{font-size:12px}#buy-banner .desktop-text{display:none}#buy-banner .mobile-text{display:block}}
+@media(min-width:601px){#buy-banner .mobile-text{display:none}}
 
-.pbanner{background:var(--oro);color:#fff;text-align:center;padding:9px 1rem;font-size:11px;font-weight:500;letter-spacing:.5px;position:sticky;top:60px;z-index:190}
-.pbanner span{opacity:.75;font-weight:300}
+/* HERO */
+.hero{height:100vh;background:url('https://images.unsplash.com/photo-1562322140-8baeececf3df?w=1920&q=80') center/cover no-repeat;position:relative;display:flex;align-items:center;justify-content:center;text-align:center;margin-top:44px}
+.hero::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,0.45)}
+.hero-content{position:relative;z-index:1;color:#fff;padding:0 20px}
+.hero-content h1{font-size:clamp(2.4rem,6vw,5rem);font-weight:300;letter-spacing:0.04em;text-shadow:0 2px 20px rgba(0,0,0,0.4)}
+.hero-content p{font-size:1.1rem;margin-top:12px;opacity:0.9;font-weight:300}
+.hero-content .cta{display:inline-block;margin-top:28px;padding:14px 36px;background:var(--purple);color:#fff;text-decoration:none;font-size:1rem;letter-spacing:0.08em;border-radius:2px}
+.rating-badge{margin-top:20px;font-size:1.1rem;color:#ffd700}
 
-.hero{position:relative;height:100svh;min-height:600px;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden}
-.hero-bg{position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=1600&q=85') center/cover no-repeat}
-.hero-ov{position:absolute;inset:0;background:linear-gradient(170deg,rgba(15,12,8,.75) 0%,rgba(184,134,11,.2) 55%,rgba(15,12,8,.65) 100%)}
-.hero-c{position:relative;z-index:2;padding:0 1.5rem;max-width:720px}
-.hero-tag{font-size:11px;letter-spacing:3.5px;text-transform:uppercase;color:var(--oro-m);margin-bottom:1.5rem}
-.hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(3.2rem,10vw,6.5rem);font-weight:500;color:#fff;line-height:.95;font-style:italic;margin-bottom:.4rem}
-.hero-amp{font-family:'Cormorant Garamond',serif;font-size:clamp(1.6rem,4vw,2.8rem);color:var(--oro-m);font-style:italic;display:block;margin-bottom:1.25rem}
-.hero-sub{font-size:15px;color:rgba(255,255,255,.72);margin-bottom:.75rem;font-weight:300;letter-spacing:.4px}
-.hero-addr{font-size:12px;color:rgba(255,255,255,.45);margin-bottom:2.5rem}
-.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.btn-wa{display:inline-flex;align-items:center;gap:9px;background:var(--wa);color:#fff;text-decoration:none;padding:13px 26px;border-radius:50px;font-size:13px;font-weight:500;transition:transform .2s,box-shadow .2s}
-.btn-wa:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(37,211,102,.4)}
-.btn-wa svg{width:17px;height:17px;flex-shrink:0}
-.btn-tel{display:inline-flex;align-items:center;gap:9px;background:rgba(255,255,255,.12);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.25);color:#fff;text-decoration:none;padding:13px 26px;border-radius:50px;font-size:13px;transition:background .2s}
-.btn-tel:hover{background:rgba(255,255,255,.2)}
-.btn-tel svg{width:17px;height:17px;flex-shrink:0}
-.hero-rating{position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.1);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.18);border-radius:50px;padding:9px 20px;white-space:nowrap}
-.hr-stars{color:var(--oro-m);font-size:13px;letter-spacing:2px}
-.hr-score{font-size:14px;color:#fff;font-weight:600}
-.hr-label{font-size:11px;color:rgba(255,255,255,.55)}
+/* NUMERI */
+.numeri{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0;background:#fff;border-top:3px solid var(--purple)}
+.numero{padding:40px 20px;text-align:center;border-right:1px solid #eee}
+.numero:last-child{border-right:none}
+.numero span{display:block;font-family:'Cormorant Garamond',serif;font-size:3rem;color:var(--purple);font-weight:300}
+.numero p{font-size:0.8rem;letter-spacing:0.12em;text-transform:uppercase;color:#666;margin-top:6px}
 
-.numeri{background:var(--text);padding:3rem 1.5rem}
-.numeri .container{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:2rem;text-align:center}
-.num-val{font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:500;color:var(--oro-m);line-height:1;font-style:italic}
-.num-label{font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1.5px;margin-top:.5rem}
+/* SERVIZI */
+.section{padding:80px 5% 60px}
+.section-title{font-size:clamp(1.8rem,4vw,3rem);font-weight:300;text-align:center;margin-bottom:12px}
+.section-sub{text-align:center;color:#666;font-size:0.95rem;margin-bottom:50px}
+.services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;max-width:1100px;margin:0 auto}
+.service-card{background:#fff;padding:32px;border-radius:4px;border-left:3px solid var(--purple);box-shadow:0 2px 12px rgba(0,0,0,0.06)}
+.service-card h3{font-size:1.3rem;font-weight:400;margin-bottom:8px}
+.service-card p{color:#666;font-size:0.9rem;line-height:1.6;margin-bottom:16px}
+.service-price{font-size:1.4rem;color:var(--purple);font-family:'Cormorant Garamond',serif}
 
-section{padding:5.5rem 1.5rem}
-.container{max-width:1000px;margin:0 auto}
-.s-label{font-size:10px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--oro);margin-bottom:.75rem}
-.s-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4.5vw,3rem);font-weight:500;color:var(--text);line-height:1.1;margin-bottom:1rem}
-.s-title em{font-style:italic;color:var(--oro)}
-.s-sub{font-size:15px;color:var(--t2);font-weight:300;line-height:1.8;max-width:580px;margin-bottom:2.5rem}
-.divider{width:44px;height:1px;background:var(--oro);margin:0 0 2rem}
-.fade{opacity:0;transform:translateY(22px);transition:opacity .65s,transform .65s}
-.fade.in{opacity:1;transform:none}
-.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}
+/* CHI SIAMO */
+.about{background:#fff;padding:80px 5%}
+.about-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+@media(max-width:768px){.about-inner{grid-template-columns:1fr}}
+.about-imgs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.about-imgs img{width:100%;height:200px;object-fit:cover;border-radius:2px}
+.about-imgs img:first-child{grid-column:1/-1;height:250px}
+.about-text h2{font-size:2.4rem;font-weight:300;margin-bottom:20px}
+.about-text p{color:#555;line-height:1.8;margin-bottom:16px}
 
-#servizi{background:var(--off)}
-.svc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.25rem}
-.svc-card{background:var(--w);border:1px solid var(--border);border-radius:14px;padding:1.75rem 1.5rem;display:flex;flex-direction:column;transition:border-color .2s,transform .2s,box-shadow .2s}
-.svc-card:hover{border-color:var(--oro);transform:translateY(-3px);box-shadow:0 8px 24px rgba(184,134,11,.12)}
-.svc-icon{font-size:1.4rem;margin-bottom:.5rem}
-.svc-name{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:600;color:var(--text)}
-.svc-desc{font-size:12px;color:var(--t3);line-height:1.65;margin-top:.35rem;flex:1}
-.svc-price{font-size:1.5rem;font-weight:300;color:var(--oro);margin-top:.85rem}
-.svc-price sup{font-size:.85rem;vertical-align:top;margin-top:.25rem}
-.svc-from{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-top:.2rem}
-.svc-footer{margin-top:2.5rem;text-align:center;font-size:12px;color:var(--t2);padding:1.1rem;border:1px dashed var(--border);border-radius:10px;line-height:1.8}
+/* GALLERIA */
+.gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:4px}
+.gallery img{width:100%;height:220px;object-fit:cover;display:block;transition:transform 0.3s}
+.gallery img:hover{transform:scale(1.02)}
 
-#chisiamo .inner{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
-.cs-imgs{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
-.cs-imgs .img-main{grid-column:1/-1;border-radius:14px;overflow:hidden;aspect-ratio:16/9}
-.cs-imgs .img-sm{border-radius:10px;overflow:hidden;aspect-ratio:1}
-.cs-imgs img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s}
-.cs-imgs img:hover{transform:scale(1.04)}
-.cs-body{font-size:15px;line-height:1.95;color:var(--t2);font-weight:300;margin-bottom:1.1rem}
-.cs-valori{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-top:1.75rem}
-.val-item{background:var(--oro-l);border:1px solid var(--oro-m);border-radius:10px;padding:1rem}
-.val-icon{font-size:1.1rem;margin-bottom:.3rem}
-.val-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:.2rem}
-.val-desc{font-size:11px;color:var(--t2);line-height:1.5}
+/* TESTIMONIANZE */
+.testi{background:var(--purple);padding:80px 5%;color:#fff}
+.testi .section-title{color:#fff}
+.testi .section-sub{color:rgba(255,255,255,0.8)}
+.testi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;max-width:1000px;margin:0 auto}
+.testi-card{background:rgba(255,255,255,0.12);padding:28px;border-radius:4px}
+.testi-card p{font-style:italic;line-height:1.7;margin-bottom:16px;font-family:'Cormorant Garamond',serif;font-size:1.1rem}
+.testi-card .name{font-size:0.85rem;letter-spacing:0.1em;text-transform:uppercase;opacity:0.8}
+.stars{color:#ffd700;margin-bottom:8px;font-size:1.1rem}
 
-#galleria{background:var(--off)}
-.gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-top:2rem}
-.g-item{border-radius:12px;overflow:hidden}
-.g-item img{width:100%;height:220px;object-fit:cover;display:block;transition:transform .4s}
-.g-item:hover img{transform:scale(1.05)}
-.g-big{grid-row:span 2}
-.g-big img{height:100%}
+/* ORARI */
+.orari{background:#fff;padding:80px 5%}
+.orari-inner{max-width:600px;margin:0 auto}
+.orari table{width:100%;border-collapse:collapse;margin-top:30px}
+.orari td{padding:14px 0;border-bottom:1px solid #eee;font-size:0.95rem}
+.orari td:last-child{text-align:right;color:var(--purple)}
 
-#testimonianze{background:var(--text)}
-#testimonianze .s-label{color:var(--oro-m)}
-#testimonianze .s-title{color:#fff}
-#testimonianze .s-title em{color:var(--oro-m)}
-.testi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.25rem;margin-top:2.5rem}
-.testi-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:1.75rem}
-.testi-stars{color:var(--oro-m);font-size:14px;letter-spacing:2px;margin-bottom:1rem}
-.testi-text{font-size:14px;color:rgba(255,255,255,.68);line-height:1.85;font-weight:300;font-style:italic;margin-bottom:1.25rem}
-.testi-author{display:flex;align-items:center;gap:10px}
-.testi-av{width:36px;height:36px;border-radius:50%;background:var(--oro);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#fff;flex-shrink:0}
-.testi-name{font-size:13px;font-weight:500;color:#fff}
-.testi-meta{font-size:11px;color:rgba(255,255,255,.4)}
-.testi-source{margin-top:2rem;text-align:center;font-size:11px;color:rgba(255,255,255,.28);letter-spacing:.5px}
+/* FAQ */
+.faq{padding:80px 5%;background:var(--light)}
+.faq-inner{max-width:800px;margin:0 auto}
+.faq-item{border-bottom:1px solid #e0e0e0;padding:20px 0}
+.faq-item summary{font-size:1.05rem;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center}
+.faq-item summary::after{content:'+';font-size:1.4rem;color:var(--purple)}
+details[open] summary::after{content:'−'}
+.faq-item p{color:#555;line-height:1.7;margin-top:14px;font-size:0.95rem}
 
-#orari .inner{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start}
-.orari-wrap{max-width:400px}
-.o-row{display:grid;grid-template-columns:110px 1fr;padding:13px 0;border-bottom:1px solid var(--border)}
-.o-row:last-child{border-bottom:none}
-.o-day{font-size:13px;font-weight:500;color:var(--text)}
-.o-time{font-size:13px;color:var(--t2);font-weight:300}
-.o-closed{color:var(--t3);font-style:italic}
-.o-today{background:var(--oro-l);margin:0 -1rem;padding:13px 1rem;border-radius:8px;border-bottom:none}
-.o-today .o-day{color:var(--oro)}
-.o-today .o-time{color:var(--oro-d);font-weight:500}
-.orari-note{margin-top:1.5rem;padding:1rem 1.25rem;background:var(--off);border:1px solid var(--border);border-radius:10px;font-size:12px;color:var(--t2);line-height:1.75}
-.orari-cta{margin-top:1.5rem}
-.orari-cta a{display:inline-flex;align-items:center;gap:8px;background:var(--wa);color:#fff;text-decoration:none;padding:11px 22px;border-radius:50px;font-size:13px;font-weight:500}
-.orari-cta a svg{width:16px;height:16px}
+/* MAPPA */
+#map{height:400px;width:100%}
 
-.faq-item{border-bottom:1px solid var(--border)}
-.faq-q{width:100%;text-align:left;background:none;border:none;padding:1.25rem 0;font-size:14px;font-weight:500;color:var(--text);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:1rem;font-family:'Inter',sans-serif}
-.faq-q .arr{font-size:18px;color:var(--oro);transition:transform .2s;flex-shrink:0}
-.faq-item.open .arr{transform:rotate(45deg)}
-.faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease}
-.faq-a p{font-size:13px;color:var(--t2);line-height:1.85;font-weight:300;padding-bottom:1.25rem}
-.faq-item.open .faq-a{max-height:300px}
+/* CONTATTI */
+.contatti{background:#1a1a1a;color:#fff;padding:60px 5%;text-align:center}
+.contatti h2{font-size:2rem;font-weight:300;margin-bottom:8px}
+.contatti p{color:#aaa;margin-bottom:6px}
+.contatti a{color:var(--purple);text-decoration:none}
 
-#dove .inner{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start}
-.dove-info{display:flex;flex-direction:column;gap:1.5rem}
-.dove-item{display:flex;gap:1rem;align-items:flex-start}
-.dove-ico{width:40px;height:40px;border-radius:50%;background:var(--oro-l);border:1px solid var(--oro-m);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.dove-ico svg{width:17px;height:17px;color:var(--oro)}
-.dove-lbl{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:3px}
-.dove-val{font-size:14px;color:var(--text);line-height:1.6}
-.dove-val a{color:var(--oro);text-decoration:none}
-.dove-val a:hover{text-decoration:underline}
-.maps-btn{display:inline-flex;align-items:center;gap:8px;margin-top:.75rem;background:var(--text);color:#fff;text-decoration:none;padding:10px 20px;border-radius:50px;font-size:12px;font-weight:500;transition:background .2s}
-.maps-btn:hover{background:var(--oro)}
-.maps-btn svg{width:14px;height:14px}
-.dove-mappa{border-radius:14px;overflow:hidden;height:360px;border:1px solid var(--border)}
-.dove-mappa #map{width:100%;height:100%}
+/* FOOTER */
+footer{background:#111;color:#666;text-align:center;padding:24px;font-size:0.8rem}
+footer a{color:#888;cursor:pointer}
 
-footer{background:#0f0c08;padding:3.5rem 1.5rem 2rem}
-footer .container{display:flex;flex-direction:column;gap:2rem}
-.f-top{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:2rem}
-.f-logo{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:#fff;font-style:italic;margin-bottom:.5rem}
-.f-brand p{font-size:12px;color:rgba(255,255,255,.3);line-height:1.7}
-.f-col h4{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:1rem}
-.f-col a,.f-col p{display:block;font-size:13px;color:rgba(255,255,255,.45);text-decoration:none;margin-bottom:.5rem;line-height:1.6;transition:color .2s}
-.f-col a:hover{color:#fff}
-.f-bottom{border-top:1px solid rgba(255,255,255,.07);padding-top:1.5rem;font-size:11px;color:rgba(255,255,255,.22);display:flex;flex-wrap:wrap;gap:.75rem;justify-content:space-between}
+/* WHATSAPP */
+.wa-btn{position:fixed;bottom:24px;right:24px;background:#25D366;color:#fff;width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:26px;box-shadow:0 4px 16px rgba(37,211,102,0.4);z-index:8888}
 
-.wa-sticky{position:fixed;bottom:1.5rem;right:1.5rem;z-index:300;width:56px;height:56px;border-radius:50%;background:var(--wa);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(37,211,102,.45);text-decoration:none;transition:transform .2s}
-.wa-sticky:hover{transform:scale(1.1)}
-.wa-sticky svg{width:28px;height:28px;color:#fff}
-
-.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:500;align-items:center;justify-content:center;padding:1rem}
-.mo.open{display:flex}
-.mo-box{background:#fff;border-radius:16px;max-width:580px;width:100%;max-height:85vh;overflow:hidden;display:flex;flex-direction:column}
-.mo-hdr{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
-.mo-hdr h3{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:600}
-.mo-close{background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--t2)}
-.mo-body{padding:1.5rem;overflow-y:auto;font-size:13px;line-height:1.9;color:var(--t2)}
-.mo-body h4{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--text);margin:1.25rem 0 .4rem}
-.mo-body h4:first-child{margin-top:0}
-
-@media(max-width:900px){.f-top{grid-template-columns:1fr 1fr}.f-brand{grid-column:1/-1}}
-@media(max-width:768px){
-  nav{padding:0 1rem}
-  section{padding:3.5rem 1rem}
-  #chisiamo .inner,#orari .inner,#dove .inner{grid-template-columns:1fr;gap:2.5rem}
-  .cs-imgs .img-main{aspect-ratio:16/9}
-  .gallery-grid{grid-template-columns:1fr 1fr}
-  .g-big{grid-row:auto}
-  .g-big img,.g-item img{height:180px}
-  .dove-mappa{height:240px}
-  .f-top{grid-template-columns:1fr}.f-brand{grid-column:auto}
-  .hero-btns{flex-direction:column;align-items:center}
-  .numeri .container{grid-template-columns:1fr 1fr}
-}
+/* MODAL */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:99999;align-items:center;justify-content:center}
+.modal.open{display:flex}
+.modal-box{background:#fff;padding:40px;max-width:600px;width:90%;max-height:80vh;overflow-y:auto;border-radius:4px}
+.modal-box h3{margin-bottom:16px;font-size:1.6rem;font-weight:300}
+.modal-box p{color:#555;line-height:1.7;font-size:0.9rem;margin-bottom:10px}
+.modal-close{float:right;background:none;border:1px solid #ccc;padding:6px 14px;cursor:pointer;border-radius:2px}
 </style>
 </head>
 <body>
 
-<nav>
-  <div class="nav-logo">Ricci <em>&</em> Capricci</div>
-  <div class="nav-links">
-    <a href="#servizi">Servizi</a>
-    <a href="#chisiamo">Chi siamo</a>
-    <a href="#orari">Orari</a>
-    <a href="https://wa.me/393395327550" target="_blank" rel="noopener" class="nav-cta">WhatsApp</a>
-  </div>
-</nav>
-
-<div class="pbanner">✦ Anteprima sito — <span>così apparirà il tuo sito web professionale</span></div>
-
-<section class="hero" id="home">
-  <div class="hero-bg"></div>
-  <div class="hero-ov"></div>
-  <div class="hero-c fade">
-    <p class="hero-tag">Salone di bellezza · Bologna Borgo Panigale</p>
-    <h1>Ricci</h1>
-    <span class="hero-amp">& Capricci</span>
-    <p class="hero-sub">Taglio, colore e colpi di luce con esperienza e passione.<br>Un salone dove ti senti a casa.</p>
-    <p class="hero-addr">📍 Via Raffaele Bombelli 19, Bologna</p>
-    <div class="hero-btns">
-      <a href="https://wa.me/393395327550" class="btn-wa" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a6.73 6.73 0 00-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.852L.057 23.55a.75.75 0 00.921.921l5.696-1.471A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.713 9.713 0 01-4.964-1.362l-.356-.212-3.685.951.975-3.585-.232-.368A9.712 9.712 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
-        Scrivici su WhatsApp
-      </a>
-      <a href="tel:+393395327550" class="btn-tel">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.04 1.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92v2z"/></svg>
-        +39 339 532 7550
-      </a>
-    </div>
-  </div>
-  <div class="hero-rating">
-    <span class="hr-stars">★★★★☆</span>
-    <span class="hr-score">4.3</span>
-    <span class="hr-label">· 11 recensioni su Google</span>
-  </div>
-</section>
-
-<div class="numeri">
-  <div class="container">
-    <div class="fade"><div class="num-val">15+</div><div class="num-label">Anni di esperienza</div></div>
-    <div class="fade d1"><div class="num-val">4.3</div><div class="num-label">Rating Google</div></div>
-    <div class="fade d2"><div class="num-val">500+</div><div class="num-label">Clienti soddisfatte</div></div>
-    <div class="fade d3"><div class="num-val">Bologna</div><div class="num-label">Borgo Panigale</div></div>
-  </div>
+<!-- BANNER ACQUISTO -->
+<div id="buy-banner">
+  <p class="desktop-text">Ti piace questo sito? Il tuo potrebbe essere identico — online in 5 giorni per €99</p>
+  <p class="mobile-text">Vuoi un sito così? €99</p>
+  <a href="https://buy.stripe.com/8x25kC7mo39M0bN1Mv1B601" target="_blank">Inizia ora →</a>
 </div>
 
-<section id="servizi">
-  <div class="container">
-    <p class="s-label fade">Cosa offriamo</p>
-    <h2 class="s-title fade">I nostri <em>servizi</em></h2>
-    <p class="s-sub fade">Ogni servizio è pensato per valorizzare la tua bellezza naturale. Utilizziamo prodotti professionali selezionati per la salute e la lucentezza dei tuoi capelli.</p>
-    <div class="svc-grid">
-      <div class="svc-card fade">
-        <div class="svc-icon">✂️</div>
-        <div class="svc-name">Taglio donna</div>
-        <div class="svc-desc">Taglio personalizzato con consulenza iniziale. Analizziamo forma del viso, struttura del capello e stile di vita per il risultato perfetto.</div>
-        <div class="svc-price"><sup>€</sup>35</div><div class="svc-from">a partire da</div>
-      </div>
-      <div class="svc-card fade d1">
-        <div class="svc-icon">💨</div>
-        <div class="svc-name">Piega</div>
-        <div class="svc-desc">Liscia, mossa o voluminosa. Prodotti termoprotettori per una piega duratura che rispetta la salute del capello.</div>
-        <div class="svc-price"><sup>€</sup>25</div><div class="svc-from">a partire da</div>
-      </div>
-      <div class="svc-card fade d2">
-        <div class="svc-icon">🎨</div>
-        <div class="svc-name">Colore</div>
-        <div class="svc-desc">Tinta intera o ricrescita con colori professionali a bassa ammoniaca. Copertura perfetta e risultati naturali e duraturi.</div>
-        <div class="svc-price"><sup>€</sup>55</div><div class="svc-from">a partire da</div>
-      </div>
-      <div class="svc-card fade d3">
-        <div class="svc-icon">✨</div>
-        <div class="svc-name">Colpi di luce</div>
-        <div class="svc-desc">Meches tradizionali, balayage o schiariture su misura. Per illuminare il tuo colore naturale senza effetti artificiali.</div>
-        <div class="svc-price"><sup>€</sup>70</div><div class="svc-from">a partire da</div>
-      </div>
-      <div class="svc-card fade">
-        <div class="svc-icon">💆</div>
-        <div class="svc-name">Trattamenti</div>
-        <div class="svc-desc">Maschere ristrutturanti, anticrespo e cheratina. Per capelli forti, idratati e sani dall'interno verso l'esterno.</div>
-        <div class="svc-price"><sup>€</sup>30</div><div class="svc-from">a partire da</div>
-      </div>
-      <div class="svc-card fade d1">
-        <div class="svc-icon">👰</div>
-        <div class="svc-name">Acconciature</div>
-        <div class="svc-desc">Raccolti, onde, trecce e acconciature da cerimonia. Perfetta per matrimoni, feste ed eventi speciali.</div>
-        <div class="svc-price"><sup>€</sup>45</div><div class="svc-from">a partire da</div>
-      </div>
-    </div>
-    <div class="svc-footer fade">I prezzi variano in base a lunghezza e struttura del capello. Per un preventivo scrivi su <a href="https://wa.me/393395327550" style="color:var(--oro);text-decoration:none;font-weight:500">WhatsApp</a> — rispondiamo entro poche ore.</div>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <h1>Ricci & Capricci</h1>
+    <p>Via Raffaele Bombelli, 19 · Bologna</p>
+    <div class="rating-badge">★★★★ 4.3 · 11 recensioni</div>
+    <a href="https://wa.me/393395327550" class="cta" target="_blank">Prenota ora via WhatsApp</a>
   </div>
 </section>
 
-<section id="chisiamo">
-  <div class="container">
-    <div class="inner">
-      <div class="cs-imgs fade">
-        <div class="img-main"><img src="https://images.unsplash.com/photo-1560066984-138dadb4c035?w=900&q=85" alt="Interno salone" loading="lazy"/></div>
-        <div class="img-sm"><img src="https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?w=500&q=85" alt="Lavoro in salone" loading="lazy"/></div>
-        <div class="img-sm"><img src="https://images.unsplash.com/photo-1519699047748-de8e457a634e?w=500&q=85" alt="Capelli colorati" loading="lazy"/></div>
-      </div>
-      <div class="fade d1">
-        <p class="s-label">Chi siamo</p>
-        <h2 class="s-title">Un salone <em>di fiducia</em><br>nel cuore del quartiere</h2>
-        <div class="divider"></div>
-        <p class="cs-body">Ricci & Capricci nasce dalla passione per la bellezza e dalla voglia di creare un luogo dove ogni cliente si senta accolta, ascoltata e valorizzata. Siamo a Bologna Borgo Panigale da oltre 15 anni, e ogni giorno lavoriamo per confermare la fiducia di chi sceglie noi.</p>
-        <p class="cs-body">Il nostro team si aggiorna continuamente sulle ultime tendenze — dai tagli moderni alle colorazioni naturali, fino ai trattamenti più innovativi. Perché la cura dei capelli non è solo estetica: è benessere.</p>
-        <div class="cs-valori">
-          <div class="val-item"><div class="val-icon">🌿</div><div class="val-title">Prodotti selezionati</div><div class="val-desc">Solo marchi professionali a basso impatto</div></div>
-          <div class="val-item"><div class="val-icon">👂</div><div class="val-title">Ascolto e consulenza</div><div class="val-desc">Ogni visita inizia da una consulenza personale</div></div>
-          <div class="val-item"><div class="val-icon">⏱</div><div class="val-title">Puntualità</div><div class="val-desc">Rispettiamo i tuoi tempi, sempre</div></div>
-          <div class="val-item"><div class="val-icon">💛</div><div class="val-title">Ambiente familiare</div><div class="val-desc">Ti senti a casa dal primo appuntamento</div></div>
-        </div>
-      </div>
+<!-- NUMERI -->
+<div class="numeri">
+  <div class="numero"><span>4.3</span><p>Rating Google</p></div>
+  <div class="numero"><span>11</span><p>Recensioni</p></div>
+  <div class="numero"><span>15+</span><p>Anni di esperienza</p></div>
+  <div class="numero"><span>Bologna</span><p>Città</p></div>
+</div>
+
+<!-- SERVIZI -->
+<section class="section" style="background:var(--light)">
+  <h2 class="section-title">I Nostri Servizi</h2>
+  <p class="section-sub">Trattamenti professionali per ogni esigenza</p>
+  <div class="services-grid">
+    <div class="service-card"><h3>Taglio Donna</h3><p>Taglio su misura con consulenza personalizzata per valorizzare la tua forma del viso.</p><div class="service-price">da €35</div></div>
+    <div class="service-card"><h3>Colore & Meches</h3><p>Colorazioni professionali con prodotti di alta qualità per un risultato luminoso e duraturo.</p><div class="service-price">da €55</div></div>
+    <div class="service-card"><h3>Piega & Styling</h3><p>Piega professionale con phon, piastra o arricciacapelli per ogni occasione.</p><div class="service-price">da €20</div></div>
+    <div class="service-card"><h3>Trattamenti Capelli</h3><p>Maschere nutrienti, trattamenti keratina e ricostruzione per capelli sani e forti.</p><div class="service-price">da €30</div></div>
+    <div class="service-card"><h3>Taglio Uomo</h3><p>Taglio classico o moderno con finiture impeccabili. Anche barba su richiesta.</p><div class="service-price">da €20</div></div>
+    <div class="service-card"><h3>Acconciature Sposa</h3><p>Acconciature per matrimoni ed eventi speciali. Prova inclusa su appuntamento.</p><div class="service-price">da €80</div></div>
+  </div>
+</section>
+
+<!-- CHI SIAMO -->
+<section class="about">
+  <div class="about-inner">
+    <div class="about-imgs">
+      <img src="https://images.unsplash.com/photo-1560066984-138dadb4c035?w=600&q=80" alt="Il salone">
+      <img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&q=80" alt="Il team">
+      <img src="https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?w=600&q=80" alt="I nostri prodotti">
+    </div>
+    <div class="about-text">
+      <h2>Chi Siamo</h2>
+      <p>Siamo un salone con oltre 15 anni di esperienza nel cuore di Bologna. La nostra passione per i capelli si riflette in ogni servizio che offriamo, con attenzione ai dettagli e cura per ogni cliente.</p>
+      <p>Il nostro team di professionisti si aggiorna costantemente sulle ultime tendenze e tecniche del settore, per offrirti sempre il meglio.</p>
+      <p>Utilizziamo solo prodotti di qualità professionale, rispettosi dei capelli e dell'ambiente, per garantire risultati eccellenti e duraturi.</p>
     </div>
   </div>
 </section>
 
-<section id="galleria">
-  <div class="container">
-    <p class="s-label fade">Il nostro lavoro</p>
-    <h2 class="s-title fade">Galleria <em>lavori</em></h2>
-    <p class="s-sub fade">Ogni cliente è unica. Ecco alcune trasformazioni realizzate nel nostro salone — colori, tagli e colpi di luce pensati su misura.</p>
-    <div class="gallery-grid">
-      <div class="g-item g-big fade"><img src="https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=600&q=85" alt="Colpi di luce balayage" loading="lazy"/></div>
-      <div class="g-item fade d1"><img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&q=85" alt="Taglio e piega" loading="lazy"/></div>
-      <div class="g-item fade d2"><img src="https://images.unsplash.com/photo-1527799820374-dcf8d9d4a388?w=600&q=85" alt="Colorazione" loading="lazy"/></div>
-      <div class="g-item fade d1"><img src="https://images.unsplash.com/photo-1519699047748-de8e457a634e?w=600&q=85" alt="Capelli colorati" loading="lazy"/></div>
-      <div class="g-item fade d2"><img src="https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?w=600&q=85" alt="Styling" loading="lazy"/></div>
-    </div>
+<!-- GALLERIA -->
+<div class="gallery">
+  <img src="https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=600&q=80" alt="Galleria 1"><img src="https://images.unsplash.com/photo-1604654894610-df63bc536371?w=600&q=80" alt="Galleria 2"><img src="https://images.unsplash.com/photo-1492106087820-71f1a00d2b11?w=600&q=80" alt="Galleria 3"><img src="https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=600&q=80" alt="Galleria 4"><img src="https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=600&q=80" alt="Galleria 5">
+</div>
+
+<!-- TESTIMONIANZE -->
+<section class="testi">
+  <h2 class="section-title">Cosa Dicono di Noi</h2>
+  <p class="section-sub">Le recensioni dei nostri clienti soddisfatti</p>
+  <div class="testi-grid">
+    <div class="testi-card"><div class="stars">★★★★★</div><p>"Finalmente ho trovato il mio salone di fiducia a Bologna! Professionalità e gentilezza, risultati sempre perfetti. Lo consiglio a tutte le mie amiche."</p><div class="name">— Giulia M., cliente dal 2019</div></div>
+    <div class="testi-card"><div class="stars">★★★★★</div><p>"Ho fatto il colore qui per la prima volta e sono rimasta stupita. Capelli brillanti e sani, nessun danno. Prezzi onesti e personale super competente."</p><div class="name">— Laura P., cliente dal 2021</div></div>
+    <div class="testi-card"><div class="stars">★★★★☆</div><p>"Ambiente accogliente e rilassante. Mi hanno consigliato il taglio giusto per la mia forma del viso. Uscita soddisfattissima, ci torno sicuramente!"</p><div class="name">— Martina F., cliente dal 2022</div></div>
   </div>
 </section>
 
-<section id="testimonianze" style="padding:5.5rem 1.5rem">
-  <div class="container">
-    <p class="s-label fade">Cosa dicono di noi</p>
-    <h2 class="s-title fade">Le nostre <em>clienti</em></h2>
-    <div class="testi-grid">
-      <div class="testi-card fade">
-        <div class="testi-stars">★★★★★</div>
-        <p class="testi-text">"Sono cliente da anni e non cambierei mai. Mi ascoltano sempre, capiscono esattamente quello che voglio. I colpi di luce sono naturali e luminosi, ogni volta."</p>
-        <div class="testi-author"><div class="testi-av">M</div><div><div class="testi-name">Maria G.</div><div class="testi-meta">Cliente da 5 anni · Google</div></div></div>
-      </div>
-      <div class="testi-card fade d1">
-        <div class="testi-stars">★★★★★</div>
-        <p class="testi-text">"Ambiente accogliente e personale gentilissimo. Ho fatto il colore per la prima volta e avevo paura, ma mi hanno guidata passo dopo passo. Risultato fantastico."</p>
-        <div class="testi-author"><div class="testi-av">L</div><div><div class="testi-name">Laura R.</div><div class="testi-meta">Cliente · Google</div></div></div>
-      </div>
-      <div class="testi-card fade d2">
-        <div class="testi-stars">★★★★☆</div>
-        <p class="testi-text">"Bravissime, soprattutto con i capelli ricci. Finalmente il salone giusto! Prezzi onesti e qualità alta. Lo consiglio a tutte le bolognesi."</p>
-        <div class="testi-author"><div class="testi-av">S</div><div><div class="testi-name">Sara T.</div><div class="testi-meta">Cliente · Google</div></div></div>
-      </div>
-    </div>
-    <p class="testi-source fade">⭐ 4.3 su Google · 11 recensioni verificate</p>
+<!-- ORARI -->
+<section class="orari">
+  <div class="orari-inner">
+    <h2 class="section-title" style="text-align:left">Orari di Apertura</h2>
+    <table>
+      <tr><td>Lunedì</td><td>Chiuso</td></tr>
+      <tr><td>Martedì</td><td>09:00 – 18:30</td></tr>
+      <tr><td>Mercoledì</td><td>09:00 – 18:30</td></tr>
+      <tr><td>Giovedì</td><td>09:00 – 18:30</td></tr>
+      <tr><td>Venerdì</td><td>09:00 – 19:00</td></tr>
+      <tr><td>Sabato</td><td>08:30 – 17:00</td></tr>
+      <tr><td>Domenica</td><td>Chiuso</td></tr>
+    </table>
+    <p style="margin-top:20px;color:#888;font-size:0.9rem">* Si consiglia la prenotazione. Contattaci su WhatsApp o al telefono.</p>
   </div>
 </section>
 
-<section id="orari">
-  <div class="container">
-    <div class="inner">
-      <div class="fade">
-        <p class="s-label">Quando trovarci</p>
-        <h2 class="s-title">Orari di <em>apertura</em></h2>
-        <div class="divider"></div>
-        <div class="orari-wrap" id="orari-wrap"></div>
-        <div class="orari-note">📞 Per appuntamenti urgenti chiama il <strong>+39 339 532 7550</strong> o scrivici su WhatsApp — rispondiamo anche durante il lavoro.</div>
-        <div class="orari-cta">
-          <a href="https://wa.me/393395327550" target="_blank" rel="noopener">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a6.73 6.73 0 00-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.852L.057 23.55a.75.75 0 00.921.921l5.696-1.471A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.713 9.713 0 01-4.964-1.362l-.356-.212-3.685.951.975-3.585-.232-.368A9.712 9.712 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
-            Scrivici su WhatsApp
-          </a>
-        </div>
-      </div>
-      <div class="fade d1">
-        <p class="s-label">Domande frequenti</p>
-        <h2 class="s-title" style="margin-bottom:1.5rem">FAQ</h2>
-        <div id="faq-wrap"></div>
-      </div>
-    </div>
+<!-- FAQ -->
+<section class="faq">
+  <div class="faq-inner">
+    <h2 class="section-title">Domande Frequenti</h2>
+    <p class="section-sub" style="text-align:center;margin-bottom:40px">Tutto quello che devi sapere</p>
+    <details class="faq-item"><summary>Devo prenotare in anticipo o posso venire senza appuntamento?</summary><p>Consigliamo sempre di prenotare per garantire la disponibilità del tuo stylist preferito. Tuttavia, accettiamo anche clienti senza appuntamento quando possibile. Contattaci su WhatsApp per verificare la disponibilità.</p></details>
+    <details class="faq-item"><summary>Quanto dura mediamente un trattamento colore?</summary><p>Un trattamento colore completo richiede in media 2-3 ore, a seconda del tipo di colorazione e della lunghezza dei capelli. Per le meches o il balayage, prevedere anche 3-4 ore. Ti consigliamo di prenotare con anticipo.</p></details>
+    <details class="faq-item"><summary>Utilizzate prodotti privi di ammoniaca?</summary><p>Sì, offriamo sia colorazioni tradizionali che alternative senza ammoniaca per chi ha capelli sensibili o preferisce prodotti più delicati. Il nostro team ti consiglierà il trattamento più adatto alla tua situazione.</p></details>
+    <details class="faq-item"><summary>Fate anche acconciature per eventi e matrimoni?</summary><p>Assolutamente sì! Offriamo un servizio completo per sposa e damigelle, con prova acconciatura inclusa. Contattateci con anticipo per organizzare il servizio nel giorno del vostro evento speciale.</p></details>
+    <details class="faq-item"><summary>Quali metodi di pagamento accettate?</summary><p>Accettiamo contanti, carte di credito e debito, e pagamenti digitali come Apple Pay e Google Pay. Il pagamento avviene al termine del servizio.</p></details>
   </div>
 </section>
 
-<section id="dove">
-  <div class="container">
-    <p class="s-label fade">Come raggiungerci</p>
-    <h2 class="s-title fade">Dove <em>siamo</em></h2>
-    <p class="s-sub fade">Siamo nel quartiere Borgo Panigale, facilmente raggiungibile in auto. Parcheggio disponibile nelle vie adiacenti.</p>
-    <div class="inner">
-      <div class="dove-info fade">
-        <div class="dove-item">
-          <div class="dove-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 010-5 2.5 2.5 0 010 5z"/></svg></div>
-          <div><div class="dove-lbl">Indirizzo</div><div class="dove-val">Via Raffaele Bombelli 19<br>40132 Bologna (BO)<br><span style="font-size:12px;color:var(--t3)">Quartiere Borgo Panigale</span></div></div>
-        </div>
-        <div class="dove-item">
-          <div class="dove-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.04 1.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92v2z"/></svg></div>
-          <div><div class="dove-lbl">Telefono</div><div class="dove-val"><a href="tel:+393395327550">+39 339 532 7550</a></div></div>
-        </div>
-        <div class="dove-item">
-          <div class="dove-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a6.73 6.73 0 00-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.852L.057 23.55a.75.75 0 00.921.921l5.696-1.471A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.713 9.713 0 01-4.964-1.362l-.356-.212-3.685.951.975-3.585-.232-.368A9.712 9.712 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg></div>
-          <div><div class="dove-lbl">WhatsApp</div><div class="dove-val"><a href="https://wa.me/393395327550" target="_blank" rel="noopener">Scrivici ora →</a></div></div>
-        </div>
-        <a href="https://maps.google.com/?q=Via+Raffaele+Bombelli+19+Bologna+40132" target="_blank" rel="noopener" class="maps-btn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13V7m0 13l6-3m-6-10l6-3m0 13l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4"/></svg>
-          Apri su Google Maps
-        </a>
-      </div>
-      <div class="dove-mappa fade d1"><div id="map"></div></div>
-    </div>
-  </div>
+<!-- MAPPA -->
+<div id="map"></div>
+<script>
+var map = L.map('map').setView([44.5185506, 11.2759779], 15);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(map);
+L.marker([44.5185506, 11.2759779]).addTo(map).bindPopup('<b>Ricci & Capricci</b><br>Via Raffaele Bombelli, 19').openPopup();
+</script>
+
+<!-- CONTATTI -->
+<section class="contatti">
+  <h2>Contattaci</h2>
+  <p style="margin-top:16px">Via Raffaele Bombelli, 19, 40132 Bologna</p>
+  <p><a href="tel:+39 339 532 7550">+39 339 532 7550</a></p>
+  <p style="margin-top:20px"><a href="https://wa.me/393395327550" target="_blank" style="background:var(--purple);color:#fff;padding:12px 28px;border-radius:2px;text-decoration:none;display:inline-block">Scrivici su WhatsApp</a></p>
 </section>
 
+<!-- FOOTER -->
 <footer>
-  <div class="container">
-    <div class="f-top">
-      <div class="f-brand">
-        <div class="f-logo">Ricci & Capricci</div>
-        <p>Salone di bellezza a Bologna Borgo Panigale. Taglio, colore, colpi di luce e trattamenti professionali.</p>
-      </div>
-      <div class="f-col">
-        <h4>Contatti</h4>
-        <a href="tel:+393395327550">+39 339 532 7550</a>
-        <a href="https://wa.me/393395327550" target="_blank" rel="noopener">WhatsApp</a>
-        <p>Via Raffaele Bombelli 19<br>40132 Bologna</p>
-      </div>
-      <div class="f-col">
-        <h4>Info</h4>
-        <a href="#servizi">Servizi e prezzi</a>
-        <a href="#orari">Orari</a>
-        <a href="#dove">Come raggiungerci</a>
-        <a href="#" onclick="openPrivacy();return false;">Privacy Policy</a>
-      </div>
-    </div>
-    <div class="f-bottom">
-      <span>© 2025 Ricci & Capricci · Bologna · Tutti i diritti riservati</span>
-      <span>P.IVA — da completare al momento della firma</span>
-    </div>
-  </div>
+  <p>© 2025 Ricci & Capricci · Via Raffaele Bombelli, 19, 40132 Bologna BO · <a onclick="document.getElementById('privacy-modal').classList.add('open')">Privacy Policy</a></p>
+  <p style="margin-top:8px;font-size:0.75rem;color:#444">Sito creato con <a href="https://buy.stripe.com/8x25kC7mo39M0bN1Mv1B601" style="color:#888">Simplo</a></p>
 </footer>
 
-<a href="https://wa.me/393395327550" class="wa-sticky" target="_blank" rel="noopener" aria-label="WhatsApp">
-  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a6.73 6.73 0 00-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.852L.057 23.55a.75.75 0 00.921.921l5.696-1.471A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.713 9.713 0 01-4.964-1.362l-.356-.212-3.685.951.975-3.585-.232-.368A9.712 9.712 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
-</a>
-
-<div class="mo" id="privacyModal" onclick="if(event.target===this)closePrivacy()">
-  <div class="mo-box">
-    <div class="mo-hdr"><h3>Privacy Policy</h3><button class="mo-close" onclick="closePrivacy()">×</button></div>
-    <div class="mo-body">
-      <h4>Titolare</h4><p>Ricci & Capricci — Via Raffaele Bombelli 19, 40132 Bologna · +39 339 532 7550</p>
-      <h4>Dati raccolti</h4><p>Questo sito non raccoglie dati tramite form, cookie di profilazione o analytics. I dati sono trattati solo se l'utente contatta volontariamente il titolare via telefono o WhatsApp.</p>
-      <h4>Cookie</h4><p>Nessun cookie di profilazione o di terze parti. Non è richiesto il banner cookie.</p>
-      <h4>Terze parti</h4><p>Google Fonts, Unsplash CDN e OpenStreetMap per la cartografia. I link a WhatsApp e Google Maps sono link esterni.</p>
-      <h4>Diritti</h4><p>Ai sensi del GDPR (Reg. UE 2016/679) puoi esercitare i tuoi diritti contattando il titolare ai recapiti sopra indicati.</p>
-      <h4>Aggiornamento</h4><p>Maggio 2025.</p>
-    </div>
+<!-- PRIVACY MODAL -->
+<div id="privacy-modal" class="modal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal-box">
+    <button class="modal-close" onclick="document.getElementById('privacy-modal').classList.remove('open')">Chiudi</button>
+    <h3>Privacy Policy</h3>
+    <p>Il presente sito non raccoglie dati personali degli utenti, non utilizza cookie di profilazione, non effettua tracciamento analytics.</p>
+    <p>Il sito non contiene form di contatto. Gli eventuali contatti avvengono tramite canali esterni (telefono, WhatsApp) soggetti alle proprie privacy policy.</p>
+    <p>Titolare del trattamento: Ricci & Capricci, Via Raffaele Bombelli, 19, 40132 Bologna BO.</p>
+    <p>Per qualsiasi informazione: <a href="tel:+39 339 532 7550">+39 339 532 7550</a>.</p>
+    <p>Ultimo aggiornamento: maggio 2025.</p>
   </div>
 </div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-const ORARI=[
-  {g:'Lunedì',d:'09:00',f:'19:00',a:true},{g:'Martedì',d:'09:00',f:'19:00',a:true},
-  {g:'Mercoledì',d:'09:00',f:'19:00',a:true},{g:'Giovedì',d:'09:00',f:'19:00',a:true},
-  {g:'Venerdì',d:'09:00',f:'19:00',a:true},{g:'Sabato',d:'09:00',f:'13:00',a:true},
-  {g:'Domenica',d:'',f:'',a:false}
-];
-const dow=new Date().getDay();
-const todayIdx=dow===0?6:dow-1;
-document.getElementById('orari-wrap').innerHTML=ORARI.map((o,i)=>`
-  <div class="o-row${i===todayIdx?' o-today':''}">
-    <span class="o-day">${o.g}</span>
-    <span class="o-time${!o.a?' o-closed':''}">${o.a?o.d+'–'+o.f:'Chiuso'}</span>
-  </div>`).join('');
+<!-- WHATSAPP -->
+<a href="https://wa.me/393395327550" class="wa-btn" target="_blank" title="WhatsApp">&#x1F4AC;</a>
 
-const FAQS=[
-  {q:'Devo prenotare o posso venire senza appuntamento?',a:'Accettiamo entrambe le modalità, ma ti consigliamo di contattarci prima su WhatsApp o telefono per essere sicura di trovare posto, soprattutto il sabato mattina.'},
-  {q:'Quanto dura un servizio di colpi di luce?',a:'Dai 90 minuti alle 3 ore circa, in base alla tecnica e alla lunghezza dei capelli. Ti daremo una stima precisa durante la consulenza iniziale gratuita.'},
-  {q:'Avete prodotti per capelli sensibili o allergie?',a:'Sì, abbiamo prodotti specifici per cute sensibile. Ti chiediamo sempre di segnalarlo prima del trattamento così scegliamo la soluzione più adatta a te.'},
-  {q:'Fate acconciature per matrimoni e cerimonie?',a:'Assolutamente sì! Offriamo acconciature per ogni evento speciale. Consigliamo di prenotare con largo anticipo, soprattutto in primavera ed estate.'},
-  {q:'Come posso chiedere un preventivo?',a:'Il modo più rapido è WhatsApp al +39 339 532 7550. Rispondiamo entro poche ore. In alternativa chiamaci negli orari di apertura.'}
-];
-document.getElementById('faq-wrap').innerHTML=FAQS.map((f,i)=>`
-  <div class="faq-item" id="fq${i}">
-    <button class="faq-q" onclick="toggleFaq(${i})">${f.q}<span class="arr">+</span></button>
-    <div class="faq-a"><p>${f.a}</p></div>
-  </div>`).join('');
-function toggleFaq(i){
-  const el=document.getElementById('fq'+i);
-  const open=el.classList.contains('open');
-  document.querySelectorAll('.faq-item').forEach(e=>e.classList.remove('open'));
-  if(!open)el.classList.add('open');
-}
-
-const LAT=44.5021,LNG=11.2938;
-const map=L.map('map',{zoomControl:true,scrollWheelZoom:false}).setView([LAT,LNG],16);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',maxZoom:19}).addTo(map);
-L.marker([LAT,LNG],{icon:L.divIcon({html:'<div style="width:32px;height:32px;background:#b8860b;border:3px solid #fff;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 2px 10px rgba(0,0,0,.3)"></div>',iconSize:[32,32],iconAnchor:[16,32],className:''})}).addTo(map).bindPopup('<b>Ricci & Capricci</b><br>Via Raffaele Bombelli 19<br>Bologna').openPopup();
-
-const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');obs.unobserve(e.target);}});},{threshold:.08});
-document.querySelectorAll('.fade').forEach(el=>obs.observe(el));
-
-function openPrivacy(){document.getElementById('privacyModal').classList.add('open');document.body.style.overflow='hidden';}
-function closePrivacy(){document.getElementById('privacyModal').classList.remove('open');document.body.style.overflow='';}
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closePrivacy();});
-</script>
 </body>
 </html>
